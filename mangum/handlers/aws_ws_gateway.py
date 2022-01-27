@@ -1,6 +1,11 @@
-from typing import Any, Dict, Tuple
 import base64
 
+from urllib.parse import urlencode, unquote
+from typing import Dict, Any, TYPE_CHECKING, Tuple
+
+from mangum.types import QueryParams
+
+from .. import Response, Request
 
 from ..types import Response, WsRequest
 from .abstract_handler import AbstractHandler
@@ -52,7 +57,8 @@ class AwsWsGateway(AbstractHandler):
             headers=headers_list,
             path="/",
             scheme=headers.get("x-forwarded-proto", "wss"),
-            query_string=b"",
+            query_string = self._encode_query_string()
+
             server=server,
             client=client,
             trigger_event=self.trigger_event,
@@ -73,3 +79,21 @@ class AwsWsGateway(AbstractHandler):
 
     def transform_response(self, response: Response) -> Dict[str, Any]:
         return {"statusCode": response.status}
+
+    def _encode_query_string(self) -> bytes:
+        """
+        Encodes the queryStringParameters.
+        """
+
+        params: QueryParams = self.trigger_event.get(
+            "multiValueQueryStringParameters", {}
+        )_
+        print(params)
+        if not params:
+            params = self.trigger_event.get("queryStringParameters", {})
+            print(params)
+        if not params:
+            print(params)
+            return b""
+        return urlencode(params, doseq=True).encode()
+
