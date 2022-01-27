@@ -82,7 +82,7 @@ class AwsApiGateway(AbstractHandler):
 
         params: QueryParams = self.trigger_event.get(
             "multiValueQueryStringParameters", {}
-        )_
+        )
         if not params:
             params = self.trigger_event.get("queryStringParameters", {})
         if not params:
