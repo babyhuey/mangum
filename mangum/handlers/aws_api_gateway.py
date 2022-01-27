@@ -7,7 +7,6 @@ from mangum.types import QueryParams
 from .abstract_handler import AbstractHandler
 from .. import Response, Request
 
-
 if TYPE_CHECKING:  # pragma: no cover
     from awslambdaric.lambda_context import LambdaContext
 
@@ -23,10 +22,10 @@ class AwsApiGateway(AbstractHandler):
     TYPE = "AWS_API_GATEWAY"
 
     def __init__(
-        self,
-        trigger_event: Dict[str, Any],
-        trigger_context: "LambdaContext",
-        api_gateway_base_path: str,
+            self,
+            trigger_event: Dict[str, Any],
+            trigger_context: "LambdaContext",
+            api_gateway_base_path: str,
     ):
         super().__init__(trigger_event, trigger_context)
         self.api_gateway_base_path = api_gateway_base_path
@@ -94,7 +93,7 @@ class AwsApiGateway(AbstractHandler):
             if not self.api_gateway_base_path.startswith("/"):
                 self.api_gateway_base_path = f"/{self.api_gateway_base_path}"
             if path.startswith(self.api_gateway_base_path):
-                path = path[len(self.api_gateway_base_path) :]
+                path = path[len(self.api_gateway_base_path):]
         return path
 
     @property

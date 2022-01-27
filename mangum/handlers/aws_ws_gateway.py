@@ -58,7 +58,7 @@ class AwsWsGateway(AbstractHandler):
             headers=headers_list,
             path="/",
             scheme=headers.get("x-forwarded-proto", "wss"),
-            query_string = self._encode_query_string()
+            query_string=self._encode_query_string(),
 
             server=server,
             client=client,
@@ -80,23 +80,25 @@ class AwsWsGateway(AbstractHandler):
         return body
 
     def transform_response(self, response: Response) -> Dict[str, Any]:
-	logger.info("Transform Response")
+
+        logger.info("Transform Response")
         return {"statusCode": response.status}
 
-    def _encode_query_string(self) -> bytes:
-        """
-        Encodes the queryStringParameters.
-        """
 
-        params: QueryParams = self.trigger_event.get(
-            "multiValueQueryStringParameters", {}
-        )_
-        logger.info(f"multiValueQueryStringParameters: {params}")
-        if not params:
-            params = self.trigger_event.get("queryStringParameters", {})
-            logger.info(f"queryStringParameters: {params}")
-        if not params:
-            logger.info("Returning Null")
-            return b""
-        return urlencode(params, doseq=True).encode()
+def _encode_query_string(self) -> bytes:
+    """
+    Encodes the queryStringParameters.
+    """
 
+    params: QueryParams = self.trigger_event.get(
+        "multiValueQueryStringParameters", {}
+    )
+
+    logger.info(f"multiValueQueryStringParameters: {params}")
+    if not params:
+        params = self.trigger_event.get("queryStringParameters", {})
+        logger.info(f"queryStringParameters: {params}")
+    if not params:
+        logger.info("Returning Null")
+        return b""
+    return urlencode(params, doseq=True).encode()
