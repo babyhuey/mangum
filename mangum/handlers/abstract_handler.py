@@ -68,6 +68,7 @@ class AbstractHandler(metaclass=ABCMeta):
         probably stay in one place to make sure we are able to uniquely find each
         handler correctly.
         """
+        logger.info(f"Trigger event is: {trigger_event}")
 
         # These should be ordered from most specific to least for best accuracy
         if (
@@ -75,6 +76,7 @@ class AbstractHandler(metaclass=ABCMeta):
             and "elb" in trigger_event["requestContext"]
         ):
             from . import AwsAlb
+            logger.info("AwsAlb")
 
             return AwsAlb(trigger_event, trigger_context)
 
@@ -83,6 +85,7 @@ class AbstractHandler(metaclass=ABCMeta):
             and "connectionId" in trigger_event["requestContext"]
         ):
             from . import AwsWsGateway
+            logger.info("AwsWsGateway")
 
             return AwsWsGateway(trigger_event, trigger_context)
 
@@ -92,11 +95,13 @@ class AbstractHandler(metaclass=ABCMeta):
             and "cf" in trigger_event["Records"][0]
         ):
             from . import AwsCfLambdaAtEdge
+            logger.info("AwsCfLambdaAtedge")
 
             return AwsCfLambdaAtEdge(trigger_event, trigger_context)
 
         if "version" in trigger_event and "requestContext" in trigger_event:
             from . import AwsHttpGateway
+            logger.info("AwsHttpGateway")
 
             return AwsHttpGateway(
                 trigger_event,
@@ -106,6 +111,7 @@ class AbstractHandler(metaclass=ABCMeta):
 
         if "resource" in trigger_event:
             from . import AwsApiGateway
+            logger.info("AwsApiGateway")
 
             return AwsApiGateway(
                 trigger_event,
