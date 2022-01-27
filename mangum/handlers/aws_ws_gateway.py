@@ -88,21 +88,20 @@ class AwsWsGateway(AbstractHandler):
         logger.info("Transform Response")
         return {"statusCode": response.status}
 
+    def _encode_query_string(self) -> bytes:
+        """
+        Encodes the queryStringParameters.
+        """
 
-def _encode_query_string(self) -> bytes:
-    """
-    Encodes the queryStringParameters.
-    """
+        params: QueryParams = self.trigger_event.get(
+            "multiValueQueryStringParameters", {}
+        )
 
-    params: QueryParams = self.trigger_event.get(
-        "multiValueQueryStringParameters", {}
-    )
-
-    logger.info(f"multiValueQueryStringParameters: {params}")
-    if not params:
-        params = self.trigger_event.get("queryStringParameters", {})
-        logger.info(f"queryStringParameters: {params}")
-    if not params:
-        logger.info("Returning Null")
-        return b""
-    return urlencode(params, doseq=True).encode()
+        logger.info(f"multiValueQueryStringParameters: {params}")
+        if not params:
+            params = self.trigger_event.get("queryStringParameters", {})
+            logger.info(f"queryStringParameters: {params}")
+        if not params:
+            logger.info("Returning Null")
+            return b""
+        return urlencode(params, doseq=True).encode()
