@@ -23,6 +23,7 @@ class AwsApiGateway(AbstractHandler):
     TYPE = "AWS_API_GATEWAY"
 
     def __init__(
+	print("Starting aws api gateway init")
         self,
         trigger_event: Dict[str, Any],
         trigger_context: "LambdaContext",
@@ -34,6 +35,7 @@ class AwsApiGateway(AbstractHandler):
     @property
     def request(self) -> Request:
         event = self.trigger_event
+        print(event)
 
         # multiValue versions of headers take precedence over their plain versions
         # https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -82,10 +84,13 @@ class AwsApiGateway(AbstractHandler):
 
         params: QueryParams = self.trigger_event.get(
             "multiValueQueryStringParameters", {}
-        )
+        )_
+        print(params)
         if not params:
             params = self.trigger_event.get("queryStringParameters", {})
+            print(params)
         if not params:
+            print(params)
             return b""
         return urlencode(params, doseq=True).encode()
 
