@@ -13,6 +13,7 @@ from .abstract_handler import AbstractHandler
 
 logger = logging.getLogger("mangum")
 
+
 def get_server_and_headers(event: Dict[str, Any]) -> Tuple:  # pragma: no cover
     if event.get("multiValueHeaders"):
         headers = {
@@ -50,18 +51,19 @@ class AwsWsGateway(AbstractHandler):
     @property
     def request(self) -> WsRequest:
         logger.info("Starting request")
+
         request_context = self.trigger_event["requestContext"]
         server, headers = get_server_and_headers(self.trigger_event)
         source_ip = request_context.get("identity", {}).get("sourceIp")
         client = (source_ip, 0)
         headers_list = [[k.encode(), v.encode()] for k, v in headers.items()]
+        query_string = self._encode_query_string(),
 
         return WsRequest(
             headers=headers_list,
             path="/",
             scheme=headers.get("x-forwarded-proto", "wss"),
-            query_string=self._encode_query_string(),
-
+            query_string=query_string,
             server=server,
             client=client,
             trigger_event=self.trigger_event,
