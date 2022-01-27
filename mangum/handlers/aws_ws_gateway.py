@@ -1,4 +1,5 @@
 import base64
+import logging
 
 from urllib.parse import urlencode, unquote
 from typing import Dict, Any, TYPE_CHECKING, Tuple
@@ -10,6 +11,7 @@ from .. import Response, Request
 from ..types import Response, WsRequest
 from .abstract_handler import AbstractHandler
 
+logger = logging.getLogger("mangum")
 
 def get_server_and_headers(event: Dict[str, Any]) -> Tuple:  # pragma: no cover
     if event.get("multiValueHeaders"):

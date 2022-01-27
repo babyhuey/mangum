@@ -1,11 +1,14 @@
 import base64
 from abc import ABCMeta, abstractmethod
 from typing import Dict, Any, TYPE_CHECKING, Tuple, List, Union
+import logging
 
 from ..types import Response, Request, WsRequest
 
 if TYPE_CHECKING:  # pragma: no cover
     from awslambdaric.lambda_context import LambdaContext
+
+logger = logging.getLogger("mangum")
 
 
 class AbstractHandler(metaclass=ABCMeta):
