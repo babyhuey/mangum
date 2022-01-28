@@ -50,7 +50,7 @@ class AwsWsGateway(AbstractHandler):
 
     @property
     def request(self) -> WsRequest:
-        logger.info("Starting request")
+        logger.debug("Starting request")
 
         request_context = self.trigger_event["requestContext"]
         server, headers = get_server_and_headers(self.trigger_event)
@@ -73,7 +73,7 @@ class AwsWsGateway(AbstractHandler):
 
     @property
     def body(self) -> bytes:
-        logger.info("Starting body")
+        logger.debug("Starting body")
         body = self.trigger_event.get("body", b"") or b""
 
         if self.trigger_event.get("isBase64Encoded", False):
@@ -85,7 +85,7 @@ class AwsWsGateway(AbstractHandler):
 
     def transform_response(self, response: Response) -> Dict[str, Any]:
 
-        logger.info("Transform Response")
+        logger.debug("Transform Response")
         return {"statusCode": response.status}
 
     def _encode_query_string(self) -> bytes:
@@ -97,11 +97,11 @@ class AwsWsGateway(AbstractHandler):
             "multiValueQueryStringParameters", {}
         )
 
-        logger.info(f"multiValueQueryStringParameters: {params}")
+        logger.debug(f"multiValueQueryStringParameters: {params}")
         if not params:
             params = self.trigger_event.get("queryStringParameters", {})
-            logger.info(f"queryStringParameters: {params}")
+            logger.debug(f"queryStringParameters: {params}")
         if not params:
-            logger.info("Returning Null")
+            logger.debug("Returning Null")
             return b""
         return urlencode(params, doseq=True).encode()
