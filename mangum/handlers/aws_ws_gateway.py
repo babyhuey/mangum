@@ -57,7 +57,7 @@ class AwsWsGateway(AbstractHandler):
         source_ip = request_context.get("identity", {}).get("sourceIp")
         client = (source_ip, 0)
         headers_list = [[k.encode(), v.encode()] for k, v in headers.items()]
-        query_string = self._encode_query_string(),
+        query_string = self._encode_query_string()
 
         return WsRequest(
             headers=headers_list,
