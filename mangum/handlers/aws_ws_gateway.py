@@ -48,20 +48,20 @@ class AwsWsGateway(AbstractHandler):
 
     TYPE = "AWS_WS_GATEWAY"
 
-    def __init__(
-            self,
-            trigger_event: Dict[str, Any],
-            trigger_context: "LambdaContext",
-            api_gateway_base_path: str,
-    ):
-        super().__init__(trigger_event, trigger_context)
-        self.api_gateway_base_path = api_gateway_base_path
+    # def __init__(
+    #         self,
+    #         trigger_event: Dict[str, Any],
+    #         trigger_context: "LambdaContext",
+    #         api_gateway_base_path: str,
+    # ):
+    #     super().__init__(trigger_event, trigger_context)
+    #     self.api_gateway_base_path = api_gateway_base_path
 
     @property
     def request(self) -> WsRequest:
         logger.debug("Starting request")
-
         request_context = self.trigger_event["requestContext"]
+        logger.debug(f"Request context: ${request_context}")
         server, headers = get_server_and_headers(self.trigger_event)
         source_ip = request_context.get("identity", {}).get("sourceIp")
         client = (source_ip, 0)
@@ -91,6 +91,14 @@ class AwsWsGateway(AbstractHandler):
             body = body.encode()
 
         return body
+
+    def _strip_base_path(self, path: str) -> str:
+        if self.api_gateway_base_path and self.api_gateway_base_path != "/":
+            if not self.api_gateway_base_path.startswith("/"):
+                self.api_gateway_base_path = f"/{self.api_gateway_base_path}"
+            if path.startswith(self.api_gateway_base_path):
+                path = path[len(self.api_gateway_base_path):]
+        return path
 
     def transform_response(self, response: Response) -> Dict[str, Any]:
         logger.debug("Transform Response")
