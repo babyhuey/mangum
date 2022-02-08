@@ -48,6 +48,15 @@ class AwsWsGateway(AbstractHandler):
 
     TYPE = "AWS_WS_GATEWAY"
 
+    def __init__(
+            self,
+            trigger_event: Dict[str, Any],
+            trigger_context: "LambdaContext",
+            api_gateway_base_path: str,
+    ):
+        super().__init__(trigger_event, trigger_context)
+        self.api_gateway_base_path = api_gateway_base_path
+
     @property
     def request(self) -> WsRequest:
         logger.debug("Starting request")
@@ -75,7 +84,7 @@ class AwsWsGateway(AbstractHandler):
     def body(self) -> bytes:
         logger.debug("Starting body")
         body = self.trigger_event.get("body", b"") or b""
-
+        logger.debug(f"Body is: ${body}")
         if self.trigger_event.get("isBase64Encoded", False):
             return base64.b64decode(body)
         if not isinstance(body, bytes):
@@ -84,9 +93,22 @@ class AwsWsGateway(AbstractHandler):
         return body
 
     def transform_response(self, response: Response) -> Dict[str, Any]:
-
         logger.debug("Transform Response")
-        return {"statusCode": response.status}
+        headers, multi_value_headers = self._handle_multi_value_headers(
+            response.headers
+        )
+
+        body, is_base64_encoded = self._handle_base64_response_body(
+            response.body, headers
+        )
+
+        return {
+            "statusCode": response.status,
+            "headers": headers,
+            "multiValueHeaders": multi_value_headers,
+            "body": body,
+            "isBase64Encoded": is_base64_encoded,
+        }
 
     def _encode_query_string(self) -> bytes:
         """
