@@ -61,7 +61,7 @@ class AwsWsGateway(AbstractHandler):
     def request(self) -> WsRequest:
         logger.debug("Starting request")
         request_context = self.trigger_event["requestContext"]
-        logger.debug(f"Request context: ${request_context}")
+        logger.debug(f"Request context: {request_context}")
         server, headers = get_server_and_headers(self.trigger_event)
         source_ip = request_context.get("identity", {}).get("sourceIp")
         client = (source_ip, 0)
@@ -84,7 +84,7 @@ class AwsWsGateway(AbstractHandler):
     def body(self) -> bytes:
         logger.debug("Starting body")
         body = self.trigger_event.get("body", b"") or b""
-        logger.debug(f"Body is: ${body}")
+        logger.debug(f"Body is: {body}")
         if self.trigger_event.get("isBase64Encoded", False):
             return base64.b64decode(body)
         if not isinstance(body, bytes):

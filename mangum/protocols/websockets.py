@@ -138,6 +138,7 @@ class WebSocketCycle:
         self.logger.info(
             "%s:  '%s' event received from application.", self.state, message_type
         )
+        self.logger.info(f"Websocket Cycle state is: {WebSocketCycleState.RESPONSE}")
 
         if self.state is WebSocketCycleState.HANDSHAKE and message_type in (
             "websocket.accept",
@@ -174,12 +175,13 @@ class WebSocketCycle:
             self.state is WebSocketCycleState.RESPONSE
             and message_type == "websocket.send"
         ):
-
+            self.logger.debug("got to send bit")
             # The application requested to send some data in response to the
             # "websocket.receive" event. After this, a "websocket.disconnect"
             # event is pushed to let the application finish gracefully.
             # Then the lambda's execution is ended.
-
+            current_body = message.get("body")
+            self.logger.debug(f"Current body inside send is: {current_body}")
             if message.get("body") is not None:
                 raise WebSocketError(
                     "Application attemped to send a binary payload, "
@@ -187,11 +189,14 @@ class WebSocketCycle:
                 )
 
             message_text = message.get("text", "")
+            self.logger.info(f"Message text: {message_text}")
             body = message_text.encode()
-
+            self.logger.debug("Start post to connection")
             await self.websocket.post_to_connection(self.connection_id, body=body)
+            self.logger.debug("posted to connection")
+            self.logger.debug("disconnecting")
             await self.app_queue.put({"type": "websocket.disconnect", "code": 1000})
-
+            self.logger.debug("Disconnected")
         else:
             raise UnexpectedMessage(
                 f"{self.state}: Unexpected '{message_type}' event received."
