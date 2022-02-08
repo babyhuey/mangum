@@ -109,7 +109,7 @@ class AwsWsGateway(AbstractHandler):
         body, is_base64_encoded = self._handle_base64_response_body(
             response.body, headers
         )
-
+        logger.info(f"Transform Response {body}")
         return {
             "statusCode": response.status,
             "headers": headers,

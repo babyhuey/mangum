@@ -138,7 +138,7 @@ class WebSocketCycle:
         self.logger.info(
             "%s:  '%s' event received from application.", self.state, message_type
         )
-        self.logger.info(f"Websocket Cycle state is: {WebSocketCycleState.RESPONSE}")
+        self.logger.info(f"Websocket Cycle state is: {self.state}")
 
         if self.state is WebSocketCycleState.HANDSHAKE and message_type in (
             "websocket.accept",
@@ -172,7 +172,7 @@ class WebSocketCycle:
             await self.websocket.delete_connection(self.connection_id)
 
         elif (
-            self.state is WebSocketCycleState.RESPONSE
+            (self.state is WebSocketCycleState.RESPONSE or self.state is WebSocketCycleState.HANDSHAKE)
             and message_type == "websocket.send"
         ):
             self.logger.debug("got to send bit")
