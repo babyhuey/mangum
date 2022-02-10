@@ -190,7 +190,8 @@ class WebSocketCycle:
             self.logger.debug(f"Message text: {message_text}")
             body = message_text.encode()
             await self.websocket.post_to_connection(self.connection_id, body=body)
-            await self.app_queue.put({"type": "websocket.disconnect", "code": 1000})
+            # await self.app_queue.put({"type": "websocket.disconnect", "code": 1000})
+            await self.app_queue.put(print("test"))
         else:
             raise UnexpectedMessage(
                 f"{self.state}: Unexpected '{message_type}' event received."
